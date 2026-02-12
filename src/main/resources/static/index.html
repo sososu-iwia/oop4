@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduManager Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #5b21b6;
+            --primary-light: #7c3aed;
+            --primary-rgb: 91, 33, 182;
+            --accent: #06b6d4;
+            --accent-rgb: 6, 182, 212;
+            --bg-dark: #0f0f14;
+            --bg-card: rgba(24, 24, 32, 0.85);
+            --bg-card-hover: rgba(32, 32, 44, 0.9);
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: rgba(148, 163, 184, 0.15);
+            --danger: #f43f5e;
+            --success: #22c55e;
+            --shadow-glow: 0 0 40px rgba(91, 33, 182, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'DM Sans', sans-serif; }
+
+        body {
+            background: var(--bg-dark);
+            background-image:
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(91, 33, 182, 0.25), transparent),
+                radial-gradient(ellipse 60% 40% at 100% 50%, rgba(6, 182, 212, 0.12), transparent),
+                radial-gradient(ellipse 60% 40% at 0% 80%, rgba(91, 33, 182, 0.1), transparent);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0 32px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .brand {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-light), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 6px;
+            background: var(--bg-card);
+            padding: 6px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.25s ease;
+        }
+
+        .nav-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 14px rgba(var(--primary-rgb), 0.4);
+        }
+
+        .nav-btn:hover:not(.active) {
+            background: rgba(255,255,255,0.06);
+            color: var(--text-main);
+        }
+
+        .btn-register {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent), #0891b2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(var(--accent-rgb), 0.35);
+        }
+
+        .section { display: none; animation: fadeSlide 0.4s ease; }
+        .section.active { display: block; }
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 28px;
+        }
+        @media (max-width: 900px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: var(--shadow-glow);
+            transition: border-color 0.25s, background 0.25s;
+        }
+        .card:hover { background: var(--bg-card-hover); border-color: rgba(148, 163, 184, 0.2); }
+
+        .form-card { padding: 28px; height: fit-content; }
+        .form-title { font-size: 18px; margin-bottom: 22px; font-weight: 600; color: var(--text-main); }
+
+        .input-group { margin-bottom: 18px; }
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: rgba(15, 15, 20, 0.6);
+            font-size: 14px;
+            color: var(--text-main);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .input-group input:focus, .input-group select:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.15);
+            outline: none;
+        }
+        .input-group input::placeholder { color: var(--text-muted); opacity: 0.7; }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(var(--primary-rgb), 0.35);
+        }
+        .btn-sm { padding: 8px 14px; font-size: 12px; width: auto; }
+        .btn-danger {
+            background: rgba(244, 63, 94, 0.15);
+            color: var(--danger);
+            font-weight: 600;
+            border-radius: 8px;
+            border: 1px solid rgba(244, 63, 94, 0.3);
+        }
+        .btn-danger:hover { background: var(--danger); color: white; }
+
+        .list-card { padding: 0; overflow: hidden; }
+        .table-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .search-bar { width: 260px; position: relative; }
+        .search-bar input {
+            width: 100%;
+            padding: 10px 14px 10px 40px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: rgba(15, 15, 20, 0.6);
+            font-size: 13px;
+            color: var(--text-main);
+        }
+        .search-bar input::placeholder { color: var(--text-muted); }
+        .search-bar svg { position: absolute; left: 12px; top: 11px; width: 18px; height: 18px; color: var(--text-muted); }
+
+        .sort-controls { display: flex; gap: 8px; align-items: center; }
+        .sort-controls select {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: rgba(15, 15, 20, 0.6);
+            color: var(--text-main);
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            text-align: left;
+            padding: 16px 24px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--text-muted);
+            font-weight: 600;
+            background: rgba(15, 15, 20, 0.5);
+            border-bottom: 1px solid var(--border);
+        }
+        td {
+            padding: 18px 24px;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-main);
+        }
+        tr:last-child td { border-bottom: none; }
+        tr { transition: background 0.2s; }
+        tbody tr:hover { background: rgba(255,255,255,0.03); }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-purple { background: rgba(91, 33, 182, 0.25); color: #c4b5fd; }
+        .badge-cyan { background: rgba(6, 182, 212, 0.2); color: #67e8f9; }
+
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+        }
+        .stat-card {
+            padding: 28px;
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            transition: transform 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-4px); }
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(91, 33, 182, 0.3), rgba(6, 182, 212, 0.2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+        }
+        .stat-info h3 { font-size: 28px; font-weight: 700; color: var(--text-main); }
+        .stat-info p { font-size: 13px; color: var(--text-muted); margin-top: 6px; }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(6px);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-overlay.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 24px 48px rgba(0,0,0,0.4);
+            animation: modalIn 0.35s ease;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .modal h3 { margin-bottom: 24px; font-size: 20px; }
+        .modal-close {
+            float: right;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 24px;
+            cursor: pointer;
+            line-height: 1;
+            margin: -8px -8px 0 0;
+        }
+        .modal-close:hover { color: var(--text-main); }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 16px 24px;
+            border-radius: 12px;
+            background: var(--success);
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.35);
+            z-index: 200;
+            animation: toastIn 0.4s ease;
+            display: none;
+        }
+        .toast.active { display: block; }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="brand">EduManager Pro</div>
+            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                <div class="nav-tabs">
+                    <button class="nav-btn active" onclick="switchTab('institutions')">Institutions</button>
+                    <button class="nav-btn" onclick="switchTab('teachers')">Teachers</button>
+                    <button class="nav-btn" onclick="switchTab('students')">Students</button>
+                    <button class="nav-btn" onclick="switchTab('reports')">Analysis</button>
+                </div>
+                <button class="btn-register" onclick="openRegisterModal()">Register</button>
+            </div>
+        </header>
+
+        <!-- INSTITUTIONS -->
+        <div id="institutions" class="section active">
+            <div class="dashboard-grid">
+                <div class="card form-card">
+                    <h3 class="form-title">New Institution</h3>
+                    <div class="input-group">
+                        <label>Institution Name</label>
+                        <input id="inst-name" type="text" placeholder="e.g. Harvard University">
+                    </div>
+                    <div class="input-group">
+                        <label>Location / Address</label>
+                        <input id="inst-address" type="text" placeholder="e.g. Cambridge, MA">
+                    </div>
+                    <button class="btn-primary" onclick="createInstitution()">Create Institution</button>
+                </div>
+                <div class="card list-card">
+                    <div class="table-header">
+                        <h3 class="form-title" style="margin:0">Active Institutions</h3>
+                    </div>
+                    <table>
+                        <thead><tr><th>Name</th><th>Location</th><th>Action</th></tr></thead>
+                        <tbody id="institutions-table"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TEACHERS -->
+        <div id="teachers" class="section">
+            <div class="dashboard-grid">
+                <div class="card form-card">
+                    <h3 class="form-title">New Faculty Member</h3>
+                    <div class="input-group">
+                        <label>Full Name</label>
+                        <input id="teacher-name" type="text" placeholder="Prof. John Doe">
+                    </div>
+                    <div class="input-group">
+                        <label>Subject</label>
+                        <input id="teacher-subject" type="text" placeholder="Quantum Physics">
+                    </div>
+                    <div class="input-group">
+                        <label>Institution</label>
+                        <select id="teacher-institution"></select>
+                    </div>
+                    <button class="btn-primary" onclick="createTeacher()">Onboard Faculty</button>
+                </div>
+                <div class="card list-card">
+                    <div class="table-header">
+                        <h3 class="form-title" style="margin:0">Faculty Directory</h3>
+                    </div>
+                    <table>
+                        <thead><tr><th>Name</th><th>Subject</th><th>Institution</th><th>Action</th></tr></thead>
+                        <tbody id="teachers-table"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- STUDENTS -->
+        <div id="students" class="section">
+            <div class="dashboard-grid">
+                <div class="card form-card">
+                    <h3 class="form-title">Student Enrollment</h3>
+                    <div class="input-group">
+                        <label>Student Name</label>
+                        <input id="student-name" type="text" placeholder="Jane Smith">
+                    </div>
+                    <div class="input-group">
+                        <label>Grade (1–12)</label>
+                        <input id="student-grade" type="number" min="1" max="12" placeholder="1–12">
+                    </div>
+                    <div class="input-group">
+                        <label>Institution</label>
+                        <select id="student-institution"></select>
+                    </div>
+                    <button class="btn-primary" onclick="createStudent()">Enroll Student</button>
+                </div>
+                <div class="card list-card">
+                    <div class="table-header">
+                        <h3 class="form-title" style="margin:0">Student Registry</h3>
+                        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                            <div class="search-bar">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                                <input type="text" id="search-input" placeholder="Search students..." onkeyup="searchStudents(this.value)">
+                            </div>
+                            <div class="sort-controls">
+                                <span style="font-size:12px;color:var(--text-muted)">Sort:</span>
+                                <select id="sort-by" onchange="applySort()">
+                                    <option value="">None</option>
+                                    <option value="name">Name</option>
+                                    <option value="grade">Grade</option>
+                                </select>
+                                <select id="sort-order" onchange="applySort()">
+                                    <option value="asc">Asc</option>
+                                    <option value="desc">Desc</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <table>
+                        <thead><tr><th>Name</th><th>Grade</th><th>Institution</th><th>Action</th></tr></thead>
+                        <tbody id="students-table"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- REPORTS -->
+        <div id="reports" class="section">
+            <h3 class="form-title">Analytics Dashboard</h3>
+            <div class="report-grid" id="report-grid"></div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal-overlay" id="register-modal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeRegisterModal()">&times;</button>
+            <h3>Create account</h3>
+            <div class="input-group">
+                <label>Full name</label>
+                <input id="reg-fullName" type="text" placeholder="Your name">
+            </div>
+            <div class="input-group">
+                <label>Email</label>
+                <input id="reg-email" type="email" placeholder="you@example.com">
+            </div>
+            <div class="input-group">
+                <label>Password (min 4 characters)</label>
+                <input id="reg-password" type="password" placeholder="••••••••">
+            </div>
+            <button class="btn-primary" onclick="register()">Register</button>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">You have successfully registered. Check your email.</div>
+
+    <script>
+        const API = 'http://localhost:8080/api';
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            if (event && event.target) event.target.classList.add('active');
+            if (tabId === 'reports') loadReports();
+        }
+
+        async function fetchAPI(endpoint, method = 'GET', body = null) {
+            try {
+                const opts = { method, headers: { 'Content-Type': 'application/json' } };
+                if (body) opts.body = JSON.stringify(body);
+                const res = await fetch(`${API}${endpoint}`, opts);
+                const data = res.status === 204 || res.headers.get('content-length') === '0'
+                    ? {} : await res.json().catch(() => ({}));
+                if (!res.ok) {
+                    alert(data.message || data.error || 'Error occurred');
+                    throw new Error(data.message || 'Error');
+                }
+                return method !== 'DELETE' ? data : null;
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadAll() {
+            const [insts, teachers, students] = await Promise.all([
+                fetchAPI('/institutions'),
+                fetchAPI('/teachers'),
+                fetchAPI('/students')
+            ]);
+            if (!insts || !teachers || !students) return;
+
+            document.getElementById('institutions-table').innerHTML = (insts || []).map(i => `
+                <tr>
+                    <td><div style="font-weight: 500">${escapeHtml(i.name)}</div></td>
+                    <td><span class="badge badge-purple">${escapeHtml(i.address)}</span></td>
+                    <td><button class="nav-btn btn-sm btn-danger" onclick="del('/institutions/${i.id}')">Delete</button></td>
+                </tr>
+            `).join('');
+
+            const opts = (insts || []).map(i => `<option value="${i.id}">${escapeHtml(i.name)}</option>`).join('');
+            document.getElementById('teacher-institution').innerHTML = opts;
+            document.getElementById('student-institution').innerHTML = opts;
+
+            document.getElementById('teachers-table').innerHTML = (teachers || []).map(t => `
+                <tr>
+                    <td><div style="font-weight: 500">${escapeHtml(t.name)}</div></td>
+                    <td>${escapeHtml(t.subject)}</td>
+                    <td>${t.institution ? escapeHtml(t.institution.name) : '-'}</td>
+                    <td><button class="nav-btn btn-sm btn-danger" onclick="del('/teachers/${t.id}')">Remove</button></td>
+                </tr>
+            `).join('');
+
+            renderStudents(students || []);
+        }
+
+        function escapeHtml(s) {
+            if (s == null) return '';
+            const div = document.createElement('div');
+            div.textContent = s;
+            return div.innerHTML;
+        }
+
+          function renderStudents(list) {
+            document.getElementById('students-table').innerHTML = (list || []).map(s => `
+                <tr>
+                    <td><div style="font-weight: 500">${escapeHtml(s.name)}</div></td>
+                    <td><span class="badge badge-cyan">Grade ${s.grade}</span></td>
+                    <td>${s.institution ? escapeHtml(s.institution.name) : '-'}</td>
+                    <td><button class="nav-btn btn-sm btn-danger" onclick="del('/students/${s.id}')">Expel</button></td>
+                </tr>
+            `).join('');
+        }
+
+        let searchTimeout;
+        function searchStudents(query) {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(async () => {
+                const url = query ? `/students?search=${encodeURIComponent(query)}` : '/students';
+                const list = await fetchAPI(url);
+                renderStudents(list);
+            }, 300);
+        }
+
+        function applySort() {
+            const sortBy = document.getElementById('sort-by').value;
+            const order = document.getElementById('sort-order').value;
+            if (!sortBy) {
+                loadAll();
+                return;
+            }
+            fetchAPI(`/students?sortBy=${sortBy}&order=${order}`).then(renderStudents);
+        }
+
+        async function loadReports() {
+            const data = await fetchAPI('/reports/summary');
+            document.getElementById('report-grid').innerHTML = (data || []).map(d => `
+                <div class="card stat-card">
+                    <div class="stat-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="28">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3>${d.studentCount}</h3>
+                        <p>${escapeHtml(d.institutionName)}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function createInstitution() {
+            const name = document.getElementById('inst-name').value;
+            const address = document.getElementById('inst-address').value;
+            if (await fetchAPI('/institutions', 'POST', { name, address })) {
+                document.getElementById('inst-name').value = '';
+                document.getElementById('inst-address').value = '';
+                loadAll();
+            }
+        }
+
+        async function createTeacher() {
+            const name = document.getElementById('teacher-name').value;
+            const subject = document.getElementById('teacher-subject').value;
+            const institutionId = document.getElementById('teacher-institution').value ? Number(document.getElementById('teacher-institution').value) : null;
+            if (await fetchAPI('/teachers', 'POST', { name, subject, institutionId })) {
+                document.getElementById('teacher-name').value = '';
+                document.getElementById('teacher-subject').value = '';
+                loadAll();
+            }
+        }
+
+        async function createStudent() {
+            const name = document.getElementById('student-name').value;
+            const grade = document.getElementById('student-grade').value ? parseInt(document.getElementById('student-grade').value, 10) : null;
+            const institutionId = document.getElementById('student-institution').value ? Number(document.getElementById('student-institution').value) : null;
+            if (await fetchAPI('/students', 'POST', { name, grade, institutionId })) {
+                document.getElementById('student-name').value = '';
+                document.getElementById('student-grade').value = '';
+                loadAll();
+            }
+        }
+
+        async function del(url) {
+            if (confirm('Are you sure you want to delete this record?')) {
+                await fetchAPI(url, 'DELETE');
+                loadAll();
+            }
+        }
+
+        function openRegisterModal() {
+            document.getElementById('register-modal').classList.add('active');
+        }
+        function closeRegisterModal() {
+            document.getElementById('register-modal').classList.remove('active');
+        }
+
+        async function register() {
+            const fullName = document.getElementById('reg-fullName').value;
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+            if (!email || !password) {
+                alert('Email and password are required.');
+                return;
+            }
+            const result = await fetchAPI('/auth/register', 'POST', { fullName, email, password });
+            if (result) {
+                closeRegisterModal();
+                document.getElementById('reg-fullName').value = '';
+                document.getElementById('reg-email').value = '';
+                document.getElementById('reg-password').value = '';
+                const toast = document.getElementById('toast');
+                toast.textContent = 'You have successfully registered. Check your email for confirmation.';
+                toast.classList.add('active');
+                setTimeout(() => toast.classList.remove('active'), 5000);
+            }
+        }
+
+        loadAll();
+    </script>
+</body>
+</html>
